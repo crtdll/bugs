@@ -3,6 +3,8 @@ import IconChevronDown from "~icons/lucide/chevron-down";
 import IconChevronRight from "~icons/lucide/chevron-right";
 import Button from "~/components/ui/Button";
 
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
 export interface StackFrame {
   filename?: string;
   function?: string;
@@ -28,6 +30,7 @@ export interface StackFrame {
   };
   addr_mode?: string;
   trust?: string;
+  vars?: Record<string, JsonValue>;
 }
 
 export interface DebugImage {
@@ -64,6 +67,13 @@ function findImage(
     if (iaddr >= base && (size === 0 || iaddr < base + size)) return img;
   }
   return null;
+}
+
+function formatVarValue(value: JsonValue): string {
+  if (typeof value === "string")
+    return value;
+
+  return JSON.stringify(value, null, 2);
 }
 
 export function getFrameName(frame: StackFrame): string {
@@ -148,7 +158,8 @@ export default function StacktraceViewer(props: StacktraceViewerProps) {
                 img?.arch
               );
             };
-            const isExpandable = () => hasContext() || hasDebugInfo();
+            const hasVars = () => !!frame.vars && Object.keys(frame.vars).length > 0;
+            const isExpandable = () => hasContext() || hasDebugInfo() || hasVars();
             const frameName = () => getFrameName(frame);
             const frameLocation = () => getFrameLocation(frame);
 
@@ -272,6 +283,20 @@ export default function StacktraceViewer(props: StacktraceViewerProps) {
                       <dt>code_file</dt>
                       <dd><code>{image()!.code_file}</code></dd>
                     </Show>
+                  </dl>
+                </Show>
+                <Show when={isExpanded() && hasVars()}>
+                  <dl class="stacktrace__vars">
+                    <For each={Object.entries(frame.vars!)}>
+                      {([name, value]) => (
+                        <>
+                          <dt>{name}</dt>
+                          <dd>
+                            <pre>{formatVarValue(value)}</pre>
+                          </dd>
+                        </>
+                      )}
+                    </For>
                   </dl>
                 </Show>
               </div>
