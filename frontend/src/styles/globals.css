@@ -1159,6 +1159,36 @@ label.field-label--sm {
   font-size: 12px;
 }
 
+.stacktrace__vars {
+  margin: 0 16px 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-1);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 16px;
+  row-gap: 4px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.stacktrace__vars dt {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.stacktrace__vars dd {
+  margin: 0;
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.stacktrace__vars code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
 /* ===================================================================
    BREADCRUMBS TIMELINE
    =================================================================== */
